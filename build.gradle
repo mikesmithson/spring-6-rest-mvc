@@ -24,6 +24,8 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-devtools'
+    implementation 'com.flipkart.zjsonpatch:zjsonpatch:0.4.16'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 

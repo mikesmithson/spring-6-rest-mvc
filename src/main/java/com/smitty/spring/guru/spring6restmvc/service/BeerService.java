@@ -61,4 +61,20 @@ public class BeerService {
         log.debug("Inside the Beer Service getting beer by id {}", id);
         return beerCatalog.get(id);
     }
+
+    public Beer createABeer(Beer beer) {
+        Beer newBeer =   Beer.builder()
+                .id(UUID.randomUUID())
+                .version(1)
+                .beerName(beer.getBeerName())
+                .beerStyle(beer.getBeerStyle())
+                .upc(beer.getUpc())
+                .price(beer.getPrice())
+                .quantityOnHand(beer.getQuantityOnHand())
+                .createdDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
+                .build();
+        beerCatalog.put(newBeer.getId(), newBeer);
+        return newBeer;
+    }
 }

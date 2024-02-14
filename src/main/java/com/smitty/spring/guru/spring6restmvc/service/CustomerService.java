@@ -17,16 +17,16 @@ public class CustomerService {
 
     static {
         Customer customerOne = Customer.builder()
-                .customerName("Willy Wonka")
                 .id(UUID.randomUUID())
+                .customerName("Willy Wonka")
                 .version(1)
                 .createdDate(LocalDateTime.now())
                 .lastModifiedDate(LocalDateTime.now())
                 .build();
 
         Customer customerTwo = Customer.builder()
-                .customerName("Curly Howard")
                 .id(UUID.randomUUID())
+                .customerName("Curly Howard")
                 .version(1)
                 .createdDate(LocalDateTime.now())
                 .lastModifiedDate(LocalDateTime.now())
@@ -43,5 +43,35 @@ public class CustomerService {
     public Customer getCustomerById(UUID id) {
         log.debug("Inside the Customer Service getting customer by id {}", id);
         return CUSTOMER_MAP.get(id);
+    }
+
+    public Customer addANewCustomer(Customer customer) {
+        Customer newCustomer = Customer.builder()
+                .id(UUID.randomUUID())
+                .customerName(customer.getCustomerName())
+                .version(1)
+                .createdDate(LocalDateTime.now())
+                .lastModifiedDate(LocalDateTime.now())
+                .build();
+        CUSTOMER_MAP.put(newCustomer.getId(), newCustomer);
+        return newCustomer;
+    }
+
+    public Customer updateCustomer(String customerId, Customer updatedCustomer) {
+        Customer customerToUpdate = CUSTOMER_MAP.get(UUID.fromString(customerId));
+        Customer newUpdatedCustomer = Customer.builder()
+                .id(customerToUpdate.getId())
+                .customerName(updatedCustomer.getCustomerName())
+                .version(updatedCustomer.getVersion())
+                .lastModifiedDate(LocalDateTime.now())
+                .createdDate(customerToUpdate.getCreatedDate())
+                .build();
+        CUSTOMER_MAP.put(newUpdatedCustomer.getId(), newUpdatedCustomer);
+        return newUpdatedCustomer;
+
+    }
+
+    public void deleteCustomer(String customerId) {
+        CUSTOMER_MAP.remove(UUID.fromString(customerId));
     }
 }
