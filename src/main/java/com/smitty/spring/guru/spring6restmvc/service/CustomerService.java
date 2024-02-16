@@ -1,12 +1,10 @@
 package com.smitty.spring.guru.spring6restmvc.service;
 
-import com.smitty.spring.guru.spring6restmvc.model.Beer;
-import com.smitty.spring.guru.spring6restmvc.model.BeerStyle;
 import com.smitty.spring.guru.spring6restmvc.model.Customer;
 import lombok.extern.slf4j.Slf4j;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -73,5 +71,11 @@ public class CustomerService {
 
     public void deleteCustomer(String customerId) {
         CUSTOMER_MAP.remove(UUID.fromString(customerId));
+    }
+
+    public void patchCustomer(String customerId, Customer customerToPatch) {
+        Customer customer = CUSTOMER_MAP.get(UUID.fromString(customerId));
+        new ModelMapper().map(customerToPatch, customer);
+        CUSTOMER_MAP.put(customer.getId(), customer);
     }
 }

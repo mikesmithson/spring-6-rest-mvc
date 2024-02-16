@@ -2,6 +2,7 @@ package com.smitty.spring.guru.spring6restmvc.model;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -10,8 +11,10 @@ import java.util.UUID;
 @Builder
 public class Customer {
     private final UUID id;
-    private final String customerName;
-    private final Integer version;
+    @Setter
+    private String customerName;
+    @Setter
+    private Integer version;
     private final LocalDateTime createdDate;
     private final LocalDateTime lastModifiedDate;
 }

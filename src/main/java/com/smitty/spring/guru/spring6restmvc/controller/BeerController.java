@@ -3,6 +3,7 @@ package com.smitty.spring.guru.spring6restmvc.controller;
 import com.smitty.spring.guru.spring6restmvc.model.Beer;
 import com.smitty.spring.guru.spring6restmvc.service.BeerService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +15,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/beers")
 @Slf4j

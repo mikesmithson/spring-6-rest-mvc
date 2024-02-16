@@ -3,6 +3,7 @@ package com.smitty.spring.guru.spring6restmvc.controller;
 import com.smitty.spring.guru.spring6restmvc.model.Customer;
 import com.smitty.spring.guru.spring6restmvc.service.CustomerService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,7 +13,7 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.UUID;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/customers")
 @Slf4j
@@ -28,6 +29,12 @@ public class CustomerController {
     @PutMapping("/customer/{customerId}")
     public ResponseEntity<Void> updateCustomer(@PathVariable String customerId, @RequestBody Customer updatedCustomer) {
         customerService.updateCustomer(customerId, updatedCustomer);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping(value = "/customer/{customerId}")
+    public ResponseEntity<Void> patchCustomer(@PathVariable String customerId, @RequestBody Customer customerToPatch) {
+        customerService.patchCustomer(customerId, customerToPatch);
         return ResponseEntity.noContent().build();
     }
 
