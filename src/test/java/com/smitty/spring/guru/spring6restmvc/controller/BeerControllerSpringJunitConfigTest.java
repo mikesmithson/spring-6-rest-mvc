@@ -1,6 +1,7 @@
-package com.smitty.spring.guru.controller;
+package com.smitty.spring.guru.spring6restmvc.controller;
 
-import com.smitty.spring.guru.spring6restmvc.controller.BeerController;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smitty.spring.guru.spring6restmvc.model.Beer;
 import com.smitty.spring.guru.spring6restmvc.service.BeerService;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +20,8 @@ import static org.hamcrest.Matchers.closeTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringJUnitConfig(classes = {BeerService.class, BeerController.class})
-class BeerControllerTest {
+@SpringJUnitConfig(classes = {BeerService.class, BeerController.class, ObjectMapper.class})
+class BeerControllerSpringJunitConfigTest {
     private MockMvc mockMvc;
     private Beer testBeer;
     private UUID randomUID;
@@ -31,11 +32,19 @@ class BeerControllerTest {
     @Autowired
     BeerController beerController;
 
+    @Autowired
+    ObjectMapper objectMapper;
+
     @BeforeEach
     void setUp() {
         testBeer = beerService.listBeers().get(0);
         randomUID = testBeer.getId();
         mockMvc = MockMvcBuilders.standaloneSetup(beerController).build();
+    }
+
+    @Test
+    void createABeer() throws JsonProcessingException {
+        objectMapper.findAndRegisterModules().writeValueAsString(testBeer);
     }
 
     @Test

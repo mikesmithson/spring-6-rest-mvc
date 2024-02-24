@@ -1,8 +1,7 @@
 package com.smitty.spring.guru.spring6restmvc.controller;
 
-import com.smitty.spring.guru.spring6restmvc.model.Customer;
 import com.smitty.spring.guru.spring6restmvc.service.CustomerService;
-import lombok.AllArgsConstructor;
+import com.smitty.spring.guru.spring6restmvc.model.Customer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

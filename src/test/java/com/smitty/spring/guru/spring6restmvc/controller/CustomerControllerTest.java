@@ -1,53 +1,70 @@
-package com.smitty.spring.guru.controller;
+package com.smitty.spring.guru.spring6restmvc.controller;
 
-import com.smitty.spring.guru.spring6restmvc.controller.CustomerController;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smitty.spring.guru.spring6restmvc.model.Customer;
 import com.smitty.spring.guru.spring6restmvc.service.CustomerService;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static java.lang.String.join;
 import static org.hamcrest.CoreMatchers.is;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
-@SpringJUnitConfig(classes = {CustomerService.class, CustomerController.class})
-class CustomerControllerTest {
+@WebMvcTest(CustomerController.class)
+public class CustomerControllerTest {
+    @Autowired
     private MockMvc mockMvc;
-    private Customer testCustomer;
-    private UUID randomUID;
 
     @Autowired
+    private ObjectMapper objectMapper;
+
+    @MockBean
     private CustomerService customerService;
 
-    @Autowired
-    CustomerController customerController;
+    private final Customer testCustomer = Customer.builder()
+            .id(UUID.randomUUID())
+            .customerName("Curly Howard")
+            .version(1)
+            .createdDate(LocalDateTime.now())
+            .lastModifiedDate(LocalDateTime.now())
+            .build();
+    private final List<Customer> testCustomers = List.of(testCustomer);
 
-    @BeforeEach
-    void setUp() {
-        testCustomer = customerService.listCustomers().get(0);
-        randomUID = testCustomer.getId();
-        mockMvc = MockMvcBuilders.standaloneSetup(customerController).build();
+    private UUID randomUID = testCustomer.getId();
+
+    @Test
+    void something() throws JsonProcessingException {
+        System.out.println(objectMapper.writeValueAsString(testCustomer));
     }
 
     @Test
     void getAllCustomersTest() throws Exception {
+        given(customerService.listCustomers()).willReturn(testCustomers);
+
         mockMvc.perform(get("/api/v1/customers")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()", is(2)));
+                .andExpect(jsonPath("$.length()", is(1)));
     }
 
     @Test
     void getCustomerById() throws Exception {
+        given(customerService.getCustomerById(randomUID)).willReturn(testCustomer);
+
         mockMvc.perform(get(join("", "/api/v1/customers/customer/", randomUID.toString()))
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -56,5 +73,4 @@ class CustomerControllerTest {
                 .andExpect(jsonPath("$.customerName", is(testCustomer.getCustomerName())))
                 .andExpect(jsonPath("$.version", is(testCustomer.getVersion())));
     }
-
 }
