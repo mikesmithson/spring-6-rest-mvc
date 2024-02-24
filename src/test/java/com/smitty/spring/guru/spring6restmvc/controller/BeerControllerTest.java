@@ -1,6 +1,5 @@
 package com.smitty.spring.guru.spring6restmvc.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smitty.spring.guru.spring6restmvc.model.Beer;
 import com.smitty.spring.guru.spring6restmvc.model.BeerStyle;
@@ -22,6 +21,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.closeTo;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(BeerController.class)
@@ -51,8 +51,27 @@ public class BeerControllerTest {
     private UUID randomUID = testBeer.getId();
 
     @Test
-    void something() throws JsonProcessingException {
-        System.out.println(objectMapper.writeValueAsString(testBeer));
+    void createABeer() throws Exception {
+        Beer newBeer = Beer.builder()
+                .id(UUID.randomUUID())
+                .beerStyle(BeerStyle.STOUT)
+                .beerName("Detroit Liquid Old Head Milk Chocolate Stout")
+                .upc("7654321")
+                .price(BigDecimal.valueOf(9.99))
+                .version(1)
+                .quantityOnHand(12)
+                .createdDate(LocalDateTime.now())
+                .updateDate(LocalDateTime.now())
+                .build();
+
+        given(beerService.createABeer(newBeer)).willReturn(newBeer);
+
+        mockMvc.perform(post("/api/v1/beers")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newBeer)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
     }
 
     @Test
