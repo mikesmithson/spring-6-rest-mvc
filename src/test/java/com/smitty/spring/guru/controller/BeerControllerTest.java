@@ -3,42 +3,54 @@ package com.smitty.spring.guru.controller;
 import com.smitty.spring.guru.spring6restmvc.controller.BeerController;
 import com.smitty.spring.guru.spring6restmvc.model.Beer;
 import com.smitty.spring.guru.spring6restmvc.service.BeerService;
-import static org.hamcrest.CoreMatchers.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.math.BigDecimal;
 import java.util.UUID;
 
 import static java.lang.String.join;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.closeTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@ExtendWith(MockitoExtension.class)
+@SpringJUnitConfig(classes = {BeerService.class, BeerController.class})
 class BeerControllerTest {
     private MockMvc mockMvc;
     private Beer testBeer;
     private UUID randomUID;
 
+    @Autowired
+    private BeerService beerService;
+
+    @Autowired
+    BeerController beerController;
 
     @BeforeEach
     void setUp() {
-        BeerService beerService = new BeerService();
         testBeer = beerService.listBeers().get(0);
         randomUID = testBeer.getId();
-        mockMvc = MockMvcBuilders.standaloneSetup(new BeerController(beerService)).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(beerController).build();
+    }
+
+    @Test
+    void getAllBeersTest() throws Exception {
+        mockMvc.perform(get("/api/v1/beers/")
+                .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(jsonPath("$.length()", is(3)));
     }
 
     @Test
     void getBeerById() throws Exception {
-        mockMvc.perform(get(join("","/api/v1/beers/beer/", randomUID.toString()))
-                .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get(join("", "/api/v1/beers/beer/", randomUID.toString()))
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.id", is(randomUID.toString())))
