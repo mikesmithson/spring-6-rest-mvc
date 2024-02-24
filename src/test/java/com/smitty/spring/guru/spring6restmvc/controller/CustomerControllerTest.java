@@ -1,10 +1,8 @@
 package com.smitty.spring.guru.spring6restmvc.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.smitty.spring.guru.spring6restmvc.model.Customer;
 import com.smitty.spring.guru.spring6restmvc.service.CustomerService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -20,8 +18,8 @@ import static java.lang.String.join;
 import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
 @WebMvcTest(CustomerController.class)
 public class CustomerControllerTest {
@@ -46,8 +44,23 @@ public class CustomerControllerTest {
     private UUID randomUID = testCustomer.getId();
 
     @Test
-    void something() throws JsonProcessingException {
-        System.out.println(objectMapper.writeValueAsString(testCustomer));
+    void createACustomer() throws Exception {
+        Customer newCustomer = Customer.builder()
+                .id(UUID.randomUUID())
+                .customerName("Moe Howard")
+                .version(1)
+                .createdDate(LocalDateTime.now())
+                .lastModifiedDate(LocalDateTime.now())
+                .build();
+
+        given(customerService.addANewCustomer(newCustomer)).willReturn(newCustomer);
+
+        mockMvc.perform(post("/api/v1/customers/customer")
+                .accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(newCustomer)))
+                .andExpect(status().isCreated())
+                .andExpect(header().exists("Location"));
     }
 
     @Test
